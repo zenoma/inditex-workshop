@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.inditex.entities.Pedido;
 import com.inditex.entities.Locker;
-import com.inditex.entities.Cliente;
-import com.inditex.entities.Producto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

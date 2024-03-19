@@ -1,11 +1,10 @@
 package com.inditex.controllers;
 
+import com.inditex.entities.Cliente;
 import com.inditex.entities.Locker;
-import com.inditex.entities.Obstaculo;
 import com.inditex.repositories.*;
 import com.inditex.entities.Producto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,14 +33,28 @@ public class ProductoController {
     public ResponseEntity<List<Producto>> getProductos() {
         List<Producto> productos = productoRepository.findAll();
 
+        if (productos.isEmpty()){
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
         return new ResponseEntity<List<Producto>>(productos, HttpStatus.OK);
     }
 
-    @PostMapping("/productos")
-    public ResponseEntity<Producto> createProducto(@RequestBody Producto producto) {
-        if (productoRepository.findByNombre(producto.getNombre()).isPresent()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @GetMapping("/productos/{id}")
+    public ResponseEntity<Producto> getProductosById(@PathVariable("id") long id) {
+        Optional<Producto> producto = productoRepository.findById(id);
+
+        if (producto.isPresent()){
+            return new ResponseEntity<Producto>(producto.get(), HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/producto")
+    public ResponseEntity<Producto> createProducto(@RequestBody Producto producto) {
+        //TODO: ¿Validate input?
 
         Producto newProducto = productoRepository.save(producto);
 

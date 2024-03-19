@@ -1,10 +1,8 @@
 package com.inditex.controllers;
 
-import com.inditex.entities.Cliente;
 import com.inditex.repositories.*;
 import com.inditex.entities.Locker;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,16 +29,29 @@ public class LockerController {
     public ResponseEntity<List<Locker>> getLockers() {
         List<Locker> lockers = lockerRepository.findAll();
 
+        if (lockers.isEmpty()){
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
         return new ResponseEntity<List<Locker>>(lockers, HttpStatus.OK);
     }
 
-    @PostMapping("/lockers")
+    @GetMapping("/lockers/{id}")
+    public ResponseEntity<Locker> getLockersById(@PathVariable("id") long id) {
+        Optional<Locker> locker = lockerRepository.findById(id);
+
+        if (locker.isPresent()){
+            return new ResponseEntity<Locker>(locker.get(), HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/locker")
     public ResponseEntity<Locker> createLocker(@RequestBody Locker locker) {
 
-
-        if (lockerRepository.findByDireccionXAndDireccionY(locker.getDireccionX(), locker.getDireccionY()).isPresent()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        //TODO: ¿Validate input?
 
         Locker newLocker = lockerRepository.save(locker);
 

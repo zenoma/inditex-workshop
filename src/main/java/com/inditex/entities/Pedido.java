@@ -1,7 +1,6 @@
 package com.inditex.entities;
 
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="pedidos")

@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="lockers")
-public class Locker{
+public class Locker {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)

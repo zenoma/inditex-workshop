@@ -3,21 +3,13 @@ package com.inditex.controllers;
 import com.inditex.repositories.*;
 import com.inditex.entities.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -31,13 +23,46 @@ public class PedidoController {
 
 	@Autowired
 	ProductoRepository productoRepository ;
+	@Autowired
+	private ClienteRepository clienteRepository;
+	@Autowired
+	private LockerRepository lockerRepository;
 
 	@GetMapping("/pedidos")
 	public ResponseEntity<List<Pedido>> getPedidos() {
-		List<Pedido> pedido = pedidoRepository.findAll();
+		List<Pedido> pedidos = pedidoRepository.findAll();
 
-		return new ResponseEntity<List<Pedido>>(pedido, HttpStatus.OK);
+		if (pedidos.isEmpty()){
+
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+
+		return new ResponseEntity<List<Pedido>>(pedidos, HttpStatus.OK);
 	}
+	@GetMapping("/pedidos/{id}")
+	public ResponseEntity<Pedido> getPedidoById(@PathVariable("id") long id) {
+		Optional<Pedido> pedido = pedidoRepository.findById(id);
+
+		if (pedido.isPresent()){
+			return new ResponseEntity<Pedido>(pedido.get(), HttpStatus.OK);
+		} else{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@PostMapping("/pedido")
+	public ResponseEntity<Pedido> createProducto(@RequestParam long idCliente, @RequestParam long idProducto) {
+		// TODO: Validate all inputs
+
+		Optional<Cliente> cliente = clienteRepository.findById(idCliente);
+		Optional<Producto> producto = productoRepository.findById(idProducto);
+		Locker locker = new Locker();
+
+		Pedido pedido = new Pedido( producto.get(),cliente.get() ,locker );
+
+		return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
+	}
+
 
     // Método de ejemplo
     @DeleteMapping("/pedidos")

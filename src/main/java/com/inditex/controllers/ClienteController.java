@@ -24,17 +24,29 @@ public class ClienteController {
     public ResponseEntity<List<Cliente>> getClientes() {
         List<Cliente> clientes = clienteRepository.findAll();
 
+        if (clientes.isEmpty()){
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<List<Cliente>>(clientes, HttpStatus.OK);
     }
 
-    @PostMapping("/clientes")
+    @GetMapping("/clientes/{id}")
+    public ResponseEntity<Cliente> getClientesById(@PathVariable("id") long id) {
+        Optional<Cliente> cliente = clienteRepository.findById(id);
+
+        if (cliente.isPresent()){
+            return new ResponseEntity<Cliente>(cliente.get(), HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PostMapping("/cliente")
     public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) {
 
-        //TODO: Check directions too
-        if (clienteRepository.findByNombre(cliente.getNombre()).isPresent()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+        //TODO: ¿Validate input?
 
         Cliente newCliente = clienteRepository.save(cliente);
 

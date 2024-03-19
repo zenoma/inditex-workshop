@@ -1,10 +1,8 @@
 package com.inditex.controllers;
 
-import com.inditex.entities.Locker;
-import com.inditex.repositories.*;
 import com.inditex.entities.Obstaculo;
+import com.inditex.repositories.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,16 +32,30 @@ public class ObstaculoController {
     public ResponseEntity<List<Obstaculo>> getObstaculos() {
         List<Obstaculo> obstaculos = obstaculoRepository.findAll();
 
+        if (obstaculos.isEmpty()){
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
         return new ResponseEntity<List<Obstaculo>>(obstaculos, HttpStatus.OK);
     }
 
+    @GetMapping("/obstaculos/{id}")
+    public ResponseEntity<Obstaculo> getObstaculosById(@PathVariable("id") long id) {
+        Optional<Obstaculo> obstaculo = obstaculoRepository.findById(id);
 
-    @PostMapping("/obstaculos")
-    public ResponseEntity<Obstaculo> createObstaculo(@RequestBody Obstaculo obstaculo) {
-        if (obstaculoRepository.findByDireccionXAndDireccionY(obstaculo.getDireccionX(), obstaculo.getDireccionY()).isPresent()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (obstaculo.isPresent()){
+            return new ResponseEntity<Obstaculo>(obstaculo.get(), HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
 
+
+    @PostMapping("/obstaculo")
+    public ResponseEntity<Obstaculo> createObstaculo(@RequestBody Obstaculo obstaculo) {
+
+        //TODO: ¿Validate input?
 
         Obstaculo newObstaculo = obstaculoRepository.save(obstaculo);
 
