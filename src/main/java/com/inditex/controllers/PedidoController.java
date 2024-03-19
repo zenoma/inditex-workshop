@@ -6,6 +6,7 @@ import com.inditex.entities.*;
 import java.util.List;
 import java.util.Optional;
 
+import com.inditex.service.RoutingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,10 @@ public class PedidoController {
 	private ClienteRepository clienteRepository;
 	@Autowired
 	private LockerRepository lockerRepository;
+
+	@Autowired
+	private RoutingService routingService;
+
 
 	@GetMapping("/pedidos")
 	public ResponseEntity<List<Pedido>> getPedidos() {
@@ -56,11 +61,18 @@ public class PedidoController {
 
 		Optional<Cliente> cliente = clienteRepository.findById(idCliente);
 		Optional<Producto> producto = productoRepository.findById(idProducto);
-		Locker locker = new Locker();
 
-		Pedido pedido = new Pedido( producto.get(),cliente.get() ,locker );
+		if(!cliente.isPresent() || !producto.isPresent()){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 
-		return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
+		Locker locker = routingService.assignLocker(cliente.get(), producto.get());
+
+		Pedido pedido = new Pedido( producto.get(),cliente.get() , locker );
+
+		Pedido newPedido = pedidoRepository.save(pedido);
+
+		return new ResponseEntity<Pedido>(newPedido, HttpStatus.CREATED);
 	}
 
 
