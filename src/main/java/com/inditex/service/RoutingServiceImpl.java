@@ -9,9 +9,12 @@ import com.inditex.repositories.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class RoutingServiceImpl implements RoutingService{
 
     @Autowired
@@ -20,22 +23,37 @@ public class RoutingServiceImpl implements RoutingService{
     private PedidoRepository pedidoRepository;
 
 
+
+    private Locker encontrarMejorLocker(Cliente cliente){
+        List<Locker> lockers = lockerRepository.findAll();
+        Locker mejorLocker = null;
+        int distanciaMinima = Integer.MAX_VALUE;
+
+        for (Locker item : lockers) {
+            int distancia = calcularDistancia(item, cliente);
+            if (distancia < distanciaMinima) {
+                distanciaMinima = distancia;
+                mejorLocker = item;
+            }
+        }
+        return mejorLocker;
+    }
+    private int calcularDistancia(Locker locker, Cliente cliente) {
+        // Calculate the absolute differences between the X and Y coordinates
+        int deltaX = Math.abs(locker.getDireccionX() - cliente.getDireccionX());
+        int deltaY = Math.abs(locker.getDireccionY() - cliente.getDireccionY());
+
+        return deltaX + deltaY;
+    }
+
+
     @Override
     public Locker assignLocker(Cliente cliente, Producto producto) {
-        // Get the full list of Pedidos
-        // If pedidos = 0 -> Asignar el locker más cercano
-        // If pedidos >= 1 -> Recorrer la lista de pedidos y obtener los valores de distancia de todos los lockers.
+        Locker locker = encontrarMejorLocker(cliente);
+        locker.setPeso(calcularDistancia(locker, cliente));
+        lockerRepository.save(locker);
 
 
-        List<Pedido> pedidosActuales = pedidoRepository.findAll();
-
-        Optional<Locker> locker = lockerRepository.findById(Long.valueOf(1));
-        if (!locker.isPresent()){
-            //TODO: Throw error
-        }
-
-
-
-        return locker.get();
+        return locker;
     }
 }

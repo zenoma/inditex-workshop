@@ -3,46 +3,56 @@ package com.inditex.entities;
 import javax.persistence.*;
 
 @Entity
-@Table(name="lockers")
+@Table(name = "lockers")
 public class Locker {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     private int direccionX;
     private int direccionY;
+    private int peso;
 
-    public Locker(){
-	super();
-    }
- 
-    public Locker(int direccionX, int direccionY){
-	this.direccionX = direccionX;
-	this.direccionY = direccionY;
+    public Locker() {
+        super();
     }
 
-    public long getId(){
-	return this.id;
+    public Locker(int direccionX, int direccionY) {
+        this.direccionX = direccionX;
+        this.direccionY = direccionY;
+        this.peso = 0;
     }
 
-    public int getDireccionX(){
-	return this.direccionX;
+    public long getId() {
+        return this.id;
     }
 
-    public int getDireccionY(){
-	return this.direccionY;
+    public int getDireccionX() {
+        return this.direccionX;
     }
 
-    public void setId(long id){
-	this.id = id;
+    public int getDireccionY() {
+        return this.direccionY;
     }
 
-    public void setDireccionX(int direccionX){
-	this.direccionX= direccionX;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setDireccionY(int direccionY){
-	this.direccionY= direccionY;
+    public void setDireccionX(int direccionX) {
+        this.direccionX = direccionX;
+    }
+
+    public void setDireccionY(int direccionY) {
+        this.direccionY = direccionY;
+    }
+
+    public int getPeso() {
+        return peso;
+    }
+
+    public void setPeso(int peso) {
+        this.peso = peso;
     }
 }
